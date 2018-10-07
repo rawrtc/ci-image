@@ -1,6 +1,6 @@
 [![CircleCI build status][circleci-badge]][circleci-url]
 
-Docker images for Continuous Integration.
+Docker images for Continuous Integration builds of RAWRTC.
 
 
 
