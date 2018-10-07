@@ -1,0 +1,51 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: docker:stable
+    steps:
+      - checkout
+      - setup_remote_docker
+      
+      # Build docker images
+      - run:
+          name: Build docker images
+          command: |
+            docker build --no-cache -t rawrtc/ci-image:trusty trusty
+            docker build --no-cache -t rawrtc/ci-image:xenial xenial
+            docker build --no-cache -t rawrtc/ci-image:bionic bionic
+            docker build --no-cache -t rawrtc/ci-image:archlinux archlinux
+      
+      # Push docker images
+      - deploy:
+          name: Push docker images
+          command: |
+            docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}
+            docker push rawrtc/ci-image:trusty
+            docker push rawrtc/ci-image:xenial
+            docker push rawrtc/ci-image:bionic
+            docker push rawrtc/ci-image:archlinux
+
+workflows:
+  version: 2
+
+  # Build on push
+  on_push:
+    jobs:
+      - build:
+          filters:
+            branches:
+              only:
+                - master
+
+  # Build every week on Monday at 05:00 am
+  weekly:
+    jobs:
+      - build
+    triggers:
+      - schedule:
+          cron: "0 5 * * 1"
+          filters:
+            branches:
+              only:
+                - master
