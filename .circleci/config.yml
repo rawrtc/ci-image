@@ -1,24 +1,33 @@
 version: 2
+
+shared: &shared
+  docker:
+    - image: docker:stable
+
 jobs:
+  # Build docker images
   build:
-    docker:
-      - image: docker:stable
+    <<: *shared
     steps:
       - checkout
       - setup_remote_docker
-      
-      # Build docker images
-      - run:
+      - run: &build
           name: Build docker images
           command: |
             docker build --no-cache -t rawrtc/ci-image:trusty trusty
             docker build --no-cache -t rawrtc/ci-image:xenial xenial
             docker build --no-cache -t rawrtc/ci-image:bionic bionic
             docker build --no-cache -t rawrtc/ci-image:archlinux archlinux
-      
-      # Push docker images
+
+  # Build and deploy docker images
+  build-and-deploy:
+    <<: *shared
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run: *build
       - deploy:
-          name: Push docker images
+          name: Deploy docker images
           command: |
             docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}
             docker push rawrtc/ci-image:trusty
@@ -29,23 +38,25 @@ jobs:
 workflows:
   version: 2
 
-  # Build on push
-  on_push:
-    jobs:
+  # Push: Always build but only deploy on push to 'host/linux-x64'
+  push:
+    jobs: &jobs
       - build:
           filters:
             branches:
-              only:
-                - master
+              ignore: &branch host/linux-x64
+      - build-and-deploy:
+          filters: &filters
+            branches:
+              only: *branch
 
-  # Build every week on Monday at 05:00 am
+  # Weekly for 'host/linux-x64': Build and deploy
   weekly:
-    jobs:
-      - build
+    jobs: *jobs
     triggers:
       - schedule:
           cron: "0 5 * * 1"
           filters:
             branches:
-              only:
-                - master
+              only: *branch
+
