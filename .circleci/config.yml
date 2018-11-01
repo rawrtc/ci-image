@@ -1,0 +1,97 @@
+version: 2
+
+shared: &shared
+  docker:
+    - image: docker:stable
+
+
+jobs:
+  build:
+    <<: *shared
+
+    steps:
+      - checkout
+      - setup_remote_docker
+
+      # Build docker image
+      - run:
+          name: Build docker image
+          command: |
+            docker build --no-cache -t rawrtcdump/cross-build:windows-x64 windows-x64
+            docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}
+            docker push rawrtcdump/cross-build:windows-x64
+
+  test:
+    docker:
+      - image: rawrtcdump/cross-build:windows-x64
+
+    steps:
+
+      # Clone test project
+      - run:
+          name: Clone test project
+          command: |
+            git clone https://github.com/rawrtc/ci-image.git -b test-project test-project
+
+      # Configure test project
+      - run:
+          name: Configure test project
+          command: |
+            cd test-project
+            mkdir build
+            meson build --prefix /tmp/prefix --cross-file windows-x64
+
+      # Build test project
+      - run:
+          name: Build test project
+          command: |
+            cd test-project/build
+            ninja install
+
+      # Run test executable
+      - run:
+          name: Run test executable
+          command: |
+            wine /tmp/prefix/bin/test-executable.exe
+
+  deploy:
+    <<: *shared
+
+    steps:
+      - setup_remote_docker
+
+      # Deploy docker image
+      - deploy:
+          name: Deploy docker image
+          command: |
+            docker pull rawrtcdump/cross-build:windows-x64
+            docker tag rawrtcdump/cross-build:windows-x64 rawrtc/cross-build:windows-x64
+            docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}
+            docker push rawrtc/cross-build:windows-x64
+
+
+workflows:
+  version: 2
+
+  # Push: Always build but only deploy on push to 'cross/windows-x64'
+  push:
+    jobs: &jobs
+      - build
+      - test:
+          requires:
+            - build
+      - deploy:
+          requires:
+            - test
+          filters: &filters
+            branches:
+              only: cross/windows-x64
+
+  # Weekly for 'cross/windows-x64' (after 'cross/base'): Build and deploy
+  weekly:
+    jobs: *jobs
+    triggers:
+      - schedule:
+          cron: "0 6 * * 1"
+          filters: *filters
+
