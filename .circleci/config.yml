@@ -1,0 +1,35 @@
+version: 2
+
+jobs:
+  test:
+    docker:
+      - image: rawrtc/cross-build:base
+
+    steps:
+      - checkout
+
+      # Configure
+      - run:
+          name: Configure
+          command: |
+            mkdir build
+            meson build
+
+      # Build
+      - run:
+          name: Build
+          command: |
+            cd build
+            ninja install
+
+      # Run
+      - run:
+          name: Run
+          command: test-executable
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - test
+
