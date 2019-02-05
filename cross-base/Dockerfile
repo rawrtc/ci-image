@@ -5,7 +5,8 @@ ENV PY3_VERSION 3.7.1
 ENV PY3_POSTFIX 3.7
 
 # Install Python 3.x with pip
-RUN apt-get install -qqy --no-install-recommends \
+RUN apt-get update \
+ && apt-get install -qqy --no-install-recommends \
     libffi-dev \
  && curl -O https://www.python.org/ftp/python/${PY3_VERSION}/Python-${PY3_VERSION}.tgz \
  && tar xf Python-${PY3_VERSION}.tgz \
