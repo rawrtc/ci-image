@@ -15,7 +15,8 @@ RUN sed -i '/debian-security/d' /etc/apt/sources.list \
  && apt-get update
 
 # Install emulator
-RUN apt-get install -qqy --no-install-recommends \
+RUN apt-get update \
+ && apt-get install -qqy --no-install-recommends \
     qemu-user \
     qemu-user-static \
     unzip

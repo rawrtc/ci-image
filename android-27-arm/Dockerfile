@@ -11,7 +11,8 @@ ENV ANDROID_ARCH arm
 
 
 # Install emulator
-RUN apt-get install -qqy --no-install-recommends \
+RUN apt-get update \
+ && apt-get install -qqy --no-install-recommends \
     qemu-user \
     qemu-user-static \
     unzip
