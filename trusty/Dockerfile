@@ -22,9 +22,9 @@ RUN apt-get install -qqy --no-install-recommends \
     make
 
 # Build OpenSSL
-RUN curl -O https://www.openssl.org/source/openssl-1.1.1.tar.gz \
- && tar -zxf openssl-1.1.1.tar.gz \
- && cd openssl-1.1.1 \
+RUN curl -O https://www.openssl.org/source/openssl-1.1.1a.tar.gz \
+ && tar -zxf openssl-1.1.1a.tar.gz \
+ && cd openssl-1.1.1a \
  && ./config shared \
  && make \
  && make install \
