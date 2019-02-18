@@ -1,4 +1,4 @@
-FROM base/archlinux:latest
+FROM archlinux/base:latest
 
 # CircleCI dependencies
 RUN pacman -Sy --noconfirm --needed \
