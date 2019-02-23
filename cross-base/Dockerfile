@@ -23,4 +23,4 @@ RUN ln -s `which python${PY3_POSTFIX}` /usr/local/bin/python3 \
  && ln -s `which pip${PY3_POSTFIX}` /usr/local/bin/pip3
 
 # Install Meson
-RUN pip3 install meson==0.48.1
+RUN pip3 install meson==0.49.2
