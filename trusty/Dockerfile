@@ -19,7 +19,11 @@ RUN apt-get install -qqy --no-install-recommends \
     gcc \
     libc-dev \
     pkg-config \
+    python3-pip \
     make
+
+# Install Meson
+RUN pip3 install meson
 
 # Build OpenSSL
 RUN curl -O https://www.openssl.org/source/openssl-1.1.1a.tar.gz \

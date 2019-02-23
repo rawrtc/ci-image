@@ -19,4 +19,8 @@ RUN apt-get install -qqy --no-install-recommends \
     libc-dev \
     libssl-dev \
     pkg-config \
+    python3-pip \
     make
+
+# Install Meson
+RUN pip3 install meson

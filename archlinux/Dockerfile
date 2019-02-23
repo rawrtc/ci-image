@@ -17,4 +17,5 @@ RUN pacman -Sy --noconfirm --needed \
     clang \
     cmake \
     gcc \
+    meson \
     openssl
