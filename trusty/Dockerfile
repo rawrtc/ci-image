@@ -19,11 +19,15 @@ RUN apt-get install -qqy --no-install-recommends \
     gcc \
     libc-dev \
     pkg-config \
-    python3-pip \
+    python3.5 \
     make
 
+# Download and install pip
+RUN curl -O https://bootstrap.pypa.io/get-pip.py \
+ && python3.5 get-pip.py
+
 # Install Meson
-RUN pip3 install meson
+RUN pip install meson
 
 # Build OpenSSL
 RUN curl -O https://www.openssl.org/source/openssl-1.1.1a.tar.gz \
