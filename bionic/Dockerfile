@@ -21,7 +21,8 @@ RUN apt-get install -qqy --no-install-recommends \
     pkg-config \
     python3-pip \
     python3-setuptools \
-    make
+    make \
+    ninja-build
 
 # Install Meson
 RUN pip3 install meson==0.49.2
