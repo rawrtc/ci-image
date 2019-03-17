@@ -11,6 +11,12 @@ endian = 'little'
 
 [properties]
 root = '{CROSS_ROOT}'
+sys_root = '{CROSS_SYSROOT}'
+c_std = 'c99'
+needs_exe_wrapper = true
+
+[paths]
+prefix = '{CROSS_SYSROOT}/usr'
 
 [binaries]
 c = '{CROSS_ROOT}/bin/{CROSS_TRIPLE}-gcc'
@@ -20,6 +26,7 @@ as = '{CROSS_ROOT}/bin/{CROSS_TRIPLE}-as'
 ld = '{CROSS_ROOT}/bin/{CROSS_TRIPLE}-ld'
 strip = '{CROSS_ROOT}/bin/{CROSS_TRIPLE}-strip'
 fortran = '{CROSS_ROOT}/bin/{CROSS_TRIPLE}-gfortran'
+pkgconfig = '/usr/bin/pkg-config'
 # https://github.com/dockcross/dockcross/issues/274
 # exe_wrapper = 'qemu-arm'
 """
