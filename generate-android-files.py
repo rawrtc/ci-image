@@ -6,25 +6,27 @@ import sys
 from jinja2 import Template
 
 
-def main():
-    # NDK Revision
-    try:
-        ndk_revision = sys.argv[1]
-    except IndexError:
-        ndk_revision = '18b'
-    print('NDK Revision:', ndk_revision)
+def get_triple(arch):
+    return {
+        'arm': 'arm-linux-androideabi',
+        'arm64': 'aarch64-linux-android',
+        'x86': 'i686-linux-android',
+        'x86_64': 'x86_64-linux-android',
+    }[arch]
 
-    # NDK APIs
+
+def main():
+    # Android API levels
     try:
-        ndk_apis = sys.argv[2]
+        api_levels = sys.argv[1]
     except IndexError:
-        ndk_apis = [
-            '21',  # Android 5.0/5.1
-            '27',  # Android 8.1
+        api_levels = [
+            '16',  # Android 4.1/4.1.1
+            '28',  # Android 9.0
         ]
     else:
-        ndk_apis = [api.strip() for api in ndk_apis.split(',')]
-    print('NDK APIs:', ndk_apis)
+        api_levels = [api_level.strip() for api_level in api_levels.split(',')]
+    print('Android API levels:', api_levels)
 
     # Architectures
     try:
@@ -33,12 +35,19 @@ def main():
         architectures = [
             'arm',
             'arm64',
-            #'x86',
-            #'x86_64',
+            'x86',
+            'x86_64',
         ]
     else:
         architectures = [arch.strip() for arch in architectures.split(',')]
     print('Architectures:', architectures)
+
+    # OpenSSL Version
+    try:
+        openssl_version = sys.argv[3]
+    except IndexError:
+        openssl_version = '1.1.1b'
+    print('OpenSSL Version:', openssl_version)
 
     # Load templates
     with open('Dockerfile.in', 'r') as dockerfile_template_file:
@@ -50,13 +59,16 @@ def main():
 
     # Create Dockerfiles and Meson cross file generators
     targets = []
-    for ndk_api in ndk_apis:
+    for api_level in api_levels:
         for architecture in architectures:
-            name = 'android-{}-{}'.format(ndk_api, architecture)
+            if architecture in ('arm64', 'x86_64') and int(api_level) < 21:
+                continue
+            name = 'android-{}-{}'.format(api_level, architecture)
             target = {
                 'name': name,
-                'ndk_api': ndk_api,
+                'api_level': api_level,
                 'architecture': architecture,
+                'triple': get_triple(architecture),
             }
             targets.append(target)
             
@@ -69,7 +81,7 @@ def main():
             print('Generating', dockerfile_path)
             with open(str(dockerfile_path), 'w') as dockerfile:
                 dockerfile.write(dockerfile_template.render(
-                    ndk_revision=ndk_revision,
+                    openssl_version=openssl_version,
                     **target,
                 ))
 
@@ -89,7 +101,7 @@ def main():
     # Create readme
     with open('Readme.md', 'w') as readme_file:
         readme_file.write(readme_template.render(
-            ndk_revision=ndk_revision,
+            openssl_version=openssl_version,
             targets=targets,
         ))
 

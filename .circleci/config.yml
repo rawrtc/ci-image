@@ -22,7 +22,7 @@ shared:
 
 
 jobs:
-  build-android-21-arm:
+  build-android-base:
     <<: *docker
 
     steps:
@@ -33,13 +33,43 @@ jobs:
       - run:
           name: Build docker images
           command: |
-            docker build --no-cache -t rawrtcdump/cross-build:android-21-arm android-21-arm
+            docker build --no-cache -t rawrtcdump/cross-build:android-base android-base
             docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}
-            docker push rawrtcdump/cross-build:android-21-arm
+            docker push rawrtcdump/cross-build:android-base
 
-  test-android-21-arm:
+  deploy-android-base:
+    <<: *docker
+
+    steps:
+      - setup_remote_docker
+
+      # Deploy docker image
+      - deploy:
+          name: Deploy docker image
+          command: |
+            docker pull rawrtcdump/cross-build:android-base
+            docker tag rawrtcdump/cross-build:android-base rawrtc/cross-build:android-base
+            docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}
+            docker push rawrtc/cross-build:android-base
+  
+  build-android-16-arm:
+    <<: *docker
+
+    steps:
+      - checkout
+      - setup_remote_docker
+
+      # Build docker image
+      - run:
+          name: Build docker images
+          command: |
+            docker build --no-cache -t rawrtcdump/cross-build:android-16-arm android-16-arm
+            docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}
+            docker push rawrtcdump/cross-build:android-16-arm
+
+  test-android-16-arm:
     docker:
-      - image: rawrtcdump/cross-build:android-21-arm
+      - image: rawrtcdump/cross-build:android-16-arm
 
     steps:
 
@@ -52,7 +82,7 @@ jobs:
           command: |
             cd test-project
             mkdir build
-            meson build --prefix /tmp/prefix --cross-file android-21-arm
+            meson build --prefix /tmp/prefix --cross-file android-16-arm
 
       # Build test project
       - run: *build-test
@@ -64,7 +94,7 @@ jobs:
       #    command: |
       #      file /tmp/prefix/bin/test-executable
 
-  deploy-android-21-arm:
+  deploy-android-16-arm:
     <<: *docker
 
     steps:
@@ -74,11 +104,11 @@ jobs:
       - deploy:
           name: Deploy docker image
           command: |
-            docker pull rawrtcdump/cross-build:android-21-arm
-            docker tag rawrtcdump/cross-build:android-21-arm rawrtc/cross-build:android-21-arm
+            docker pull rawrtcdump/cross-build:android-16-arm
+            docker tag rawrtcdump/cross-build:android-16-arm rawrtc/cross-build:android-16-arm
             docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}
-            docker push rawrtc/cross-build:android-21-arm
-  build-android-21-arm64:
+            docker push rawrtc/cross-build:android-16-arm
+  build-android-16-x86:
     <<: *docker
 
     steps:
@@ -89,13 +119,13 @@ jobs:
       - run:
           name: Build docker images
           command: |
-            docker build --no-cache -t rawrtcdump/cross-build:android-21-arm64 android-21-arm64
+            docker build --no-cache -t rawrtcdump/cross-build:android-16-x86 android-16-x86
             docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}
-            docker push rawrtcdump/cross-build:android-21-arm64
+            docker push rawrtcdump/cross-build:android-16-x86
 
-  test-android-21-arm64:
+  test-android-16-x86:
     docker:
-      - image: rawrtcdump/cross-build:android-21-arm64
+      - image: rawrtcdump/cross-build:android-16-x86
 
     steps:
 
@@ -108,7 +138,7 @@ jobs:
           command: |
             cd test-project
             mkdir build
-            meson build --prefix /tmp/prefix --cross-file android-21-arm64
+            meson build --prefix /tmp/prefix --cross-file android-16-x86
 
       # Build test project
       - run: *build-test
@@ -120,7 +150,7 @@ jobs:
       #    command: |
       #      file /tmp/prefix/bin/test-executable
 
-  deploy-android-21-arm64:
+  deploy-android-16-x86:
     <<: *docker
 
     steps:
@@ -130,11 +160,11 @@ jobs:
       - deploy:
           name: Deploy docker image
           command: |
-            docker pull rawrtcdump/cross-build:android-21-arm64
-            docker tag rawrtcdump/cross-build:android-21-arm64 rawrtc/cross-build:android-21-arm64
+            docker pull rawrtcdump/cross-build:android-16-x86
+            docker tag rawrtcdump/cross-build:android-16-x86 rawrtc/cross-build:android-16-x86
             docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}
-            docker push rawrtc/cross-build:android-21-arm64
-  build-android-27-arm:
+            docker push rawrtc/cross-build:android-16-x86
+  build-android-28-arm:
     <<: *docker
 
     steps:
@@ -145,13 +175,13 @@ jobs:
       - run:
           name: Build docker images
           command: |
-            docker build --no-cache -t rawrtcdump/cross-build:android-27-arm android-27-arm
+            docker build --no-cache -t rawrtcdump/cross-build:android-28-arm android-28-arm
             docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}
-            docker push rawrtcdump/cross-build:android-27-arm
+            docker push rawrtcdump/cross-build:android-28-arm
 
-  test-android-27-arm:
+  test-android-28-arm:
     docker:
-      - image: rawrtcdump/cross-build:android-27-arm
+      - image: rawrtcdump/cross-build:android-28-arm
 
     steps:
 
@@ -164,7 +194,7 @@ jobs:
           command: |
             cd test-project
             mkdir build
-            meson build --prefix /tmp/prefix --cross-file android-27-arm
+            meson build --prefix /tmp/prefix --cross-file android-28-arm
 
       # Build test project
       - run: *build-test
@@ -176,7 +206,7 @@ jobs:
       #    command: |
       #      file /tmp/prefix/bin/test-executable
 
-  deploy-android-27-arm:
+  deploy-android-28-arm:
     <<: *docker
 
     steps:
@@ -186,11 +216,11 @@ jobs:
       - deploy:
           name: Deploy docker image
           command: |
-            docker pull rawrtcdump/cross-build:android-27-arm
-            docker tag rawrtcdump/cross-build:android-27-arm rawrtc/cross-build:android-27-arm
+            docker pull rawrtcdump/cross-build:android-28-arm
+            docker tag rawrtcdump/cross-build:android-28-arm rawrtc/cross-build:android-28-arm
             docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}
-            docker push rawrtc/cross-build:android-27-arm
-  build-android-27-arm64:
+            docker push rawrtc/cross-build:android-28-arm
+  build-android-28-arm64:
     <<: *docker
 
     steps:
@@ -201,13 +231,13 @@ jobs:
       - run:
           name: Build docker images
           command: |
-            docker build --no-cache -t rawrtcdump/cross-build:android-27-arm64 android-27-arm64
+            docker build --no-cache -t rawrtcdump/cross-build:android-28-arm64 android-28-arm64
             docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}
-            docker push rawrtcdump/cross-build:android-27-arm64
+            docker push rawrtcdump/cross-build:android-28-arm64
 
-  test-android-27-arm64:
+  test-android-28-arm64:
     docker:
-      - image: rawrtcdump/cross-build:android-27-arm64
+      - image: rawrtcdump/cross-build:android-28-arm64
 
     steps:
 
@@ -220,7 +250,7 @@ jobs:
           command: |
             cd test-project
             mkdir build
-            meson build --prefix /tmp/prefix --cross-file android-27-arm64
+            meson build --prefix /tmp/prefix --cross-file android-28-arm64
 
       # Build test project
       - run: *build-test
@@ -232,7 +262,7 @@ jobs:
       #    command: |
       #      file /tmp/prefix/bin/test-executable
 
-  deploy-android-27-arm64:
+  deploy-android-28-arm64:
     <<: *docker
 
     steps:
@@ -242,10 +272,122 @@ jobs:
       - deploy:
           name: Deploy docker image
           command: |
-            docker pull rawrtcdump/cross-build:android-27-arm64
-            docker tag rawrtcdump/cross-build:android-27-arm64 rawrtc/cross-build:android-27-arm64
+            docker pull rawrtcdump/cross-build:android-28-arm64
+            docker tag rawrtcdump/cross-build:android-28-arm64 rawrtc/cross-build:android-28-arm64
             docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}
-            docker push rawrtc/cross-build:android-27-arm64
+            docker push rawrtc/cross-build:android-28-arm64
+  build-android-28-x86:
+    <<: *docker
+
+    steps:
+      - checkout
+      - setup_remote_docker
+
+      # Build docker image
+      - run:
+          name: Build docker images
+          command: |
+            docker build --no-cache -t rawrtcdump/cross-build:android-28-x86 android-28-x86
+            docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}
+            docker push rawrtcdump/cross-build:android-28-x86
+
+  test-android-28-x86:
+    docker:
+      - image: rawrtcdump/cross-build:android-28-x86
+
+    steps:
+
+      # Clone test project
+      - run: *clone-test
+
+      # Configure test project
+      - run:
+          name: Configure test project
+          command: |
+            cd test-project
+            mkdir build
+            meson build --prefix /tmp/prefix --cross-file android-28-x86
+
+      # Build test project
+      - run: *build-test
+
+      # Disabled, see: https://groups.google.com/forum/#!topic/mesonbuild/wTzIblOGs8w
+      # Run test executable
+      #- run:
+      #    name: Run test executable
+      #    command: |
+      #      file /tmp/prefix/bin/test-executable
+
+  deploy-android-28-x86:
+    <<: *docker
+
+    steps:
+      - setup_remote_docker
+
+      # Deploy docker image
+      - deploy:
+          name: Deploy docker image
+          command: |
+            docker pull rawrtcdump/cross-build:android-28-x86
+            docker tag rawrtcdump/cross-build:android-28-x86 rawrtc/cross-build:android-28-x86
+            docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}
+            docker push rawrtc/cross-build:android-28-x86
+  build-android-28-x86_64:
+    <<: *docker
+
+    steps:
+      - checkout
+      - setup_remote_docker
+
+      # Build docker image
+      - run:
+          name: Build docker images
+          command: |
+            docker build --no-cache -t rawrtcdump/cross-build:android-28-x86_64 android-28-x86_64
+            docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}
+            docker push rawrtcdump/cross-build:android-28-x86_64
+
+  test-android-28-x86_64:
+    docker:
+      - image: rawrtcdump/cross-build:android-28-x86_64
+
+    steps:
+
+      # Clone test project
+      - run: *clone-test
+
+      # Configure test project
+      - run:
+          name: Configure test project
+          command: |
+            cd test-project
+            mkdir build
+            meson build --prefix /tmp/prefix --cross-file android-28-x86_64
+
+      # Build test project
+      - run: *build-test
+
+      # Disabled, see: https://groups.google.com/forum/#!topic/mesonbuild/wTzIblOGs8w
+      # Run test executable
+      #- run:
+      #    name: Run test executable
+      #    command: |
+      #      file /tmp/prefix/bin/test-executable
+
+  deploy-android-28-x86_64:
+    <<: *docker
+
+    steps:
+      - setup_remote_docker
+
+      # Deploy docker image
+      - deploy:
+          name: Deploy docker image
+          command: |
+            docker pull rawrtcdump/cross-build:android-28-x86_64
+            docker tag rawrtcdump/cross-build:android-28-x86_64 rawrtc/cross-build:android-28-x86_64
+            docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}
+            docker push rawrtc/cross-build:android-28-x86_64
 
 
 workflows:
@@ -254,37 +396,70 @@ workflows:
   # Push: Always build but only deploy on push to 'cross/android'
   push:
     jobs: &jobs
-      - build-android-21-arm
-      - test-android-21-arm:
+      - build-android-base
+      - deploy-android-base:
           requires:
-            - build-android-21-arm
-      - deploy-android-21-arm:
-          requires:
-            - test-android-21-arm
+            - build-android-base
           filters: *filters
-      - build-android-21-arm64
-      - test-android-21-arm64:
+      - build-android-16-arm:
           requires:
-            - build-android-21-arm64
-      - deploy-android-21-arm64:
+            - deploy-android-base
+      - test-android-16-arm:
           requires:
-            - test-android-21-arm64
+            - build-android-16-arm
+      - deploy-android-16-arm:
+          requires:
+            - test-android-16-arm
           filters: *filters
-      - build-android-27-arm
-      - test-android-27-arm:
+      - build-android-16-x86:
           requires:
-            - build-android-27-arm
-      - deploy-android-27-arm:
+            - deploy-android-base
+      - test-android-16-x86:
           requires:
-            - test-android-27-arm
+            - build-android-16-x86
+      - deploy-android-16-x86:
+          requires:
+            - test-android-16-x86
           filters: *filters
-      - build-android-27-arm64
-      - test-android-27-arm64:
+      - build-android-28-arm:
           requires:
-            - build-android-27-arm64
-      - deploy-android-27-arm64:
+            - deploy-android-base
+      - test-android-28-arm:
           requires:
-            - test-android-27-arm64
+            - build-android-28-arm
+      - deploy-android-28-arm:
+          requires:
+            - test-android-28-arm
+          filters: *filters
+      - build-android-28-arm64:
+          requires:
+            - deploy-android-base
+      - test-android-28-arm64:
+          requires:
+            - build-android-28-arm64
+      - deploy-android-28-arm64:
+          requires:
+            - test-android-28-arm64
+          filters: *filters
+      - build-android-28-x86:
+          requires:
+            - deploy-android-base
+      - test-android-28-x86:
+          requires:
+            - build-android-28-x86
+      - deploy-android-28-x86:
+          requires:
+            - test-android-28-x86
+          filters: *filters
+      - build-android-28-x86_64:
+          requires:
+            - deploy-android-base
+      - test-android-28-x86_64:
+          requires:
+            - build-android-28-x86_64
+      - deploy-android-28-x86_64:
+          requires:
+            - test-android-28-x86_64
           filters: *filters
 
   # Monthly for 'cross/android' (after 'cross/base'): Build and deploy

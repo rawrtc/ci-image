@@ -4,14 +4,18 @@ Docker image for Continuous Integration builds of RAWRTC targeting Android.
 
 ## Information
 
-These images are using Android NDK revision 18b and exist in the
+These images are using the Android NDK to cross-compile for Android in the
 following variations:
 
+- API level 16 for arm
+- API level 16 for x86
+- API level 28 for arm
+- API level 28 for arm64
+- API level 28 for x86
+- API level 28 for x86_64
 
-- API level 21 for arm
-- API level 21 for arm64
-- API level 27 for arm
-- API level 27 for arm64
+The images also include a minimal OpenSSL library in version
+1.1.1b.
 
 ## Generation
 
@@ -23,21 +27,20 @@ Usage:
 
 ```
 python3 generate-android-files.py \
-[<ndk-revision>] [<ndk-apis>] [<architectures>]
+[<api-levels>] [<architectures>] [<openssl-version>]
 ```
 
 Arguments:
 
-- `ndk-revision` is the [NDK revision][ndk-revision-history].
-- `ndk-apis` is a comma-separated list of [API levels][ndk-api-levels]
+- `api-levels` is a comma-separated list of [Android API levels][api-levels]
 - `architectures` is a comma-separated list of [target architectures supported
-  by Android][ndk-abis].
+  by Android][abis].
+- `openssl-version` is the target version of OpenSSL
 
 
 
 [circleci-badge]: https://circleci.com/gh/rawrtc/ci-image/tree/cross%2Fandroid.svg?style=shield
 [circleci-url]: https://circleci.com/gh/rawrtc/ci-image/tree/cross%2Fandroid
 [jinja2]: http://jinja.pocoo.org
-[ndk-revision-history]: https://developer.android.com/ndk/downloads/revision_history
-[ndk-api-levels]: https://developer.android.com/ndk/guides/stable_apis
-[ndk-abis]: https://developer.android.com/ndk/guides/abis
+[api-levels]: https://developer.android.com/guide/topics/manifest/uses-sdk-element#ApiLevels
+[abis]: https://developer.android.com/ndk/guides/abis

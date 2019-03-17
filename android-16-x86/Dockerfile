@@ -3,26 +3,15 @@ FROM rawrtc/cross-build:android-base
 
 # Environment
 ENV CROSS_ROOT=${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64 \
-    CROSS_TRIPLE={{ triple }} \
-    CROSS_FILE_NAME={{ name }} \
-    ANDROID_ARCH={{ architecture }} \
-    ANDROID_API_LEVEL={{ api_level }} \
-    OPENSSL_VERSION={{ openssl_version }}
+    CROSS_TRIPLE=i686-linux-android \
+    CROSS_FILE_NAME=android-16-x86 \
+    ANDROID_ARCH=x86 \
+    ANDROID_API_LEVEL=16 \
+    OPENSSL_VERSION=1.1.1b
 ENV PKG_CONFIG_LIBDIR=${CROSS_ROOT}/sysroot/lib/pkgconfig:${CROSS_ROOT}/sysroot/usr/lib/${CROSS_TRIPLE}/${ANDROID_API_LEVEL}/pkgconfig
 
-{% if architecture == 'arm64' %}
-# Install emulator dependencies
-RUN sed -i '/debian-security/d' /etc/apt/sources.list \
- && dpkg --add-architecture arm64 \ 
- && apt-get update
-{%- endif %}
-{% if architecture == 'arm' or architecture == 'arm64' %}
-# Install emulator
-RUN apt-get update \
- && apt-get install -qqy --no-install-recommends \
-    qemu-user \
-    qemu-user-static
-{%- endif %}
+
+
 
 # Generate Meson cross-file
 COPY generate-android-meson-cross-file.py /build/generate-android-meson-cross-file.py
@@ -45,4 +34,3 @@ RUN mkdir /build \
     no-aria no-bf no-blake2 no-camellia no-cast no-des no-dsa no-gost no-idea no-md2 no-md4 no-mdc2 no-ocb no-rc2 no-rc4 no-rc5 no-rmd160 no-scrypt no-seed no-siphash no-sm2 no-sm3 no-sm4 no-whirlpool \
  && make install_sw \
  && rm -rf /build
-

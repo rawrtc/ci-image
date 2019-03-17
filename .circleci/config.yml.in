@@ -22,7 +22,36 @@ shared:
 
 
 jobs:
-  {%- for target in targets %}
+  build-android-base:
+    <<: *docker
+
+    steps:
+      - checkout
+      - setup_remote_docker
+
+      # Build docker image
+      - run:
+          name: Build docker images
+          command: |
+            docker build --no-cache -t rawrtcdump/cross-build:android-base android-base
+            docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}
+            docker push rawrtcdump/cross-build:android-base
+
+  deploy-android-base:
+    <<: *docker
+
+    steps:
+      - setup_remote_docker
+
+      # Deploy docker image
+      - deploy:
+          name: Deploy docker image
+          command: |
+            docker pull rawrtcdump/cross-build:android-base
+            docker tag rawrtcdump/cross-build:android-base rawrtc/cross-build:android-base
+            docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}
+            docker push rawrtc/cross-build:android-base
+  {% for target in targets %}
   build-{{ target }}:
     <<: *docker
 
@@ -88,8 +117,15 @@ workflows:
   # Push: Always build but only deploy on push to 'cross/android'
   push:
     jobs: &jobs
+      - build-android-base
+      - deploy-android-base:
+          requires:
+            - build-android-base
+          filters: *filters
       {%- for target in targets %}
-      - build-{{ target }}
+      - build-{{ target }}:
+          requires:
+            - deploy-android-base
       - test-{{ target }}:
           requires:
             - build-{{ target }}
