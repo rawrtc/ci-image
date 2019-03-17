@@ -34,7 +34,7 @@ RUN curl -O https://bootstrap.pypa.io/get-pip.py \
  && rm get-pip.py
 
 # Install Meson
-RUN pip install meson==0.49.2
+RUN pip install meson==0.50.0
 
 # Build OpenSSL
 RUN curl -O https://www.openssl.org/source/openssl-1.1.1a.tar.gz \
@@ -46,3 +46,4 @@ RUN curl -O https://www.openssl.org/source/openssl-1.1.1a.tar.gz \
  && ldconfig \
  && cd .. \
  && rm -rf openssl-1.1.1a openssl-1.1.1a.tar.gz
+

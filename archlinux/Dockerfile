@@ -19,3 +19,4 @@ RUN pacman -Sy --noconfirm --needed \
     gcc \
     meson \
     openssl
+
