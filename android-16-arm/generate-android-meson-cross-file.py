@@ -11,6 +11,7 @@ endian = 'little'
 
 [properties]
 root = '{root}'
+c_std = 'c99'
 needs_exe_wrapper = true
 
 [paths]
