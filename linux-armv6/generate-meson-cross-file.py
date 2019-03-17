@@ -11,6 +11,12 @@ endian = 'little'
 
 [properties]
 root = '{CROSS_ROOT}'
+sys_root = '{CROSS_SYSROOT}'
+c_std = 'c99'
+needs_exe_wrapper = true
+
+[paths]
+prefix = '{CROSS_SYSROOT}'
 
 [binaries]
 c = '/usr/bin/{CROSS_TRIPLE}-gcc'
@@ -20,6 +26,7 @@ as = '/usr/bin/{CROSS_TRIPLE}-as'
 ld = '/usr/bin/{CROSS_TRIPLE}-ld'
 strip = '/usr/bin/{CROSS_TRIPLE}-strip'
 fortran = '/usr/bin/{CROSS_TRIPLE}-gfortran'
+pkgconfig = '/usr/bin/{CROSS_TRIPLE}-pkg-config'
 exe_wrapper = 'qemu-arm'
 """
 
